@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id          Int       @id @default(autoincrement())
+  username    String
+  email       String    @unique
+  senha_hash  String
+  createdAt   DateTime  @default(now())
+
+  lojas                 Loja[]
+  avaliacoes_lojas      AvaliacaoLoja[]
+  avaliacoes_produtos   AvaliacaoProduto[]
+  comentarios           ComentarioAvaliacao[]
+}
+
+model Loja {
+  id          Int       @id @default(autoincrement())
+  usuario_id  Int
+  nome        String
+  descricao   String?
+  logo_url    String?
+  banner_url  String?
+  sticker_url String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  usuario             Usuario         @relation(fields: [usuario_id], references: [id])
+  produtos            Produto[]
+  avaliacoes_lojas    AvaliacaoLoja[]
+}
+
+model Produto {
+  id           Int       @id @default(autoincrement())
+  loja_id      Int
+  categoria_id Int
+  nome         String
+  descricao    String?
+  preco        Decimal   @db.Decimal(10, 2)
+  estoque      Int
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  loja                Loja               @relation(fields: [loja_id], references: [id])
+  categoria           Categoria          @relation(fields: [categoria_id], references: [id])
+  movimentacoes       Movimentacao[]
+  imagens             ImagemProduto[]
+  avaliacoes_produtos AvaliacaoProduto[]
+}
+
+model Categoria {
+  id               Int       @id @default(autoincrement())
+  nome             String
+  categoria_pai_id Int?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  categoria_pai      Categoria?  @relation("CategoriaParaSubcategoria", fields: [categoria_pai_id], references: [id])
+  subcategorias      Categoria[] @relation("CategoriaParaSubcategoria")
+  produtos           Produto[]
+}
+
+model Movimentacao {
+  id          Int                @id @default(autoincrement())
+  produto_id  Int
+  tipo        MovimentacaoTipo
+  quantidade  Int
+  createdAt   DateTime           @default(now())
+
+  produto     Produto            @relation(fields: [produto_id], references: [id])
+}
+
+enum MovimentacaoTipo {
+  entrada
+  saida
+}
+
+model AvaliacaoLoja {
+  id          Int       @id @default(autoincrement())
+  usuario_id  Int
+  loja_id     Int
+  nota        Int
+  comentario  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  usuario     Usuario               @relation(fields: [usuario_id], references: [id])
+  loja        Loja                  @relation(fields: [loja_id], references: [id])
+  comentarios ComentarioAvaliacao[]
+}
+
+model AvaliacaoProduto {
+  id          Int       @id @default(autoincrement())
+  usuario_id  Int
+  produto_id  Int
+  nota        Int
+  comentario  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  usuario     Usuario               @relation(fields: [usuario_id], references: [id])
+  produto     Produto               @relation(fields: [produto_id], references: [id])
+  comentarios ComentarioAvaliacao[]
+}
+
+model ComentarioAvaliacao {
+  id                  Int       @id @default(autoincrement())
+  usuario_id          Int
+  avaliacao_loja_id   Int?
+  avaliacao_produto_id Int?
+  conteudo            String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  usuario             Usuario           @relation(fields: [usuario_id], references: [id])
+  avaliacao_loja      AvaliacaoLoja?    @relation(fields: [avaliacao_loja_id], references: [id])
+  avaliacao_produto   AvaliacaoProduto? @relation(fields: [avaliacao_produto_id], references: [id])
+}
+
+model ImagemProduto {
+  id          Int       @id @default(autoincrement())
+  produto_id  Int
+  url_imagem  String
+  ordem       Int
+  createdAt   DateTime  @default(now())
+
+  produto     Produto   @relation(fields: [produto_id], references: [id])
+}
