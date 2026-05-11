@@ -1,11 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -13,31 +7,119 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id          Int       @id @default(autoincrement())
-  username    String    @db.VarChar(255)
-  email       String    @unique @db.VarChar(255)
-  senha_hash  String    @db.VarChar(255)
-  createdAt   DateTime  @default(now()) @db.Timestamp
+model AvaliacaoLoja {
+  id                  Int                   @id @default(autoincrement())
+  usuario_id          Int
+  loja_id             Int
+  nota                Int
+  comentario          String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  Loja                Loja                  @relation(fields: [loja_id], references: [id])
+  Usuario             Usuario               @relation(fields: [usuario_id], references: [id])
+  ComentarioAvaliacao ComentarioAvaliacao[]
+}
 
-  lojas       Loja[]
+model AvaliacaoProduto {
+  id                  Int                   @id @default(autoincrement())
+  usuario_id          Int
+  produto_id          Int
+  nota                Int
+  comentario          String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime
+  Produto             Produto               @relation(fields: [produto_id], references: [id])
+  Usuario             Usuario               @relation(fields: [usuario_id], references: [id])
+  ComentarioAvaliacao ComentarioAvaliacao[]
+}
 
-  @@map("usuarios")
+model Categoria {
+  id               Int         @id @default(autoincrement())
+  nome             String
+  categoria_pai_id Int?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime
+  Categoria        Categoria?  @relation("CategoriaToCategoria", fields: [categoria_pai_id], references: [id])
+  other_Categoria  Categoria[] @relation("CategoriaToCategoria")
+  Produto          Produto[]
+}
+
+model ComentarioAvaliacao {
+  id                   Int               @id @default(autoincrement())
+  usuario_id           Int
+  avaliacao_loja_id    Int?
+  avaliacao_produto_id Int?
+  conteudo             String
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime
+  AvaliacaoLoja        AvaliacaoLoja?    @relation(fields: [avaliacao_loja_id], references: [id])
+  AvaliacaoProduto     AvaliacaoProduto? @relation(fields: [avaliacao_produto_id], references: [id])
+  Usuario              Usuario           @relation(fields: [usuario_id], references: [id])
+}
+
+model ImagemProduto {
+  id         Int      @id @default(autoincrement())
+  produto_id Int
+  url_imagem String
+  ordem      Int
+  createdAt  DateTime @default(now())
+  Produto    Produto  @relation(fields: [produto_id], references: [id])
 }
 
 model Loja {
-  id          Int      @id @default(autoincrement())
-  nome        String   @db.VarChar(255)
-  descricao   String?  @db.Text
-  logo_url    String?  @db.VarChar(255)
-  banner_url  String?  @db.VarChar(255)
-  sticker_url String?  @db.VarChar(255)
-  createdAt   DateTime @default(now()) @db.Timestamp
-  updatedAt   DateTime @updatedAt @db.Timestamp
+  id            Int             @id @default(autoincrement())
+  usuario_id    Int
+  nome          String
+  descricao     String?
+  logo_url      String?
+  banner_url    String?
+  sticker_url   String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime
+  AvaliacaoLoja AvaliacaoLoja[]
+  Usuario       Usuario         @relation(fields: [usuario_id], references: [id])
+  Produto       Produto[]
+}
 
-  usuario_id  Int
-  
-  usuario     Usuario     @relation(fields: [usuario_id], references: [id])
+model Movimentacao {
+  id         Int              @id @default(autoincrement())
+  produto_id Int
+  tipo       MovimentacaoTipo
+  quantidade Int
+  createdAt  DateTime         @default(now())
+  Produto    Produto          @relation(fields: [produto_id], references: [id])
+}
 
-  @@map("lojas")
+model Produto {
+  id               Int                @id @default(autoincrement())
+  loja_id          Int
+  categoria_id     Int
+  nome             String
+  descricao        String?
+  preco            Decimal            @db.Decimal(10, 2)
+  estoque          Int
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  AvaliacaoProduto AvaliacaoProduto[]
+  ImagemProduto    ImagemProduto[]
+  Movimentacao     Movimentacao[]
+  Categoria        Categoria          @relation(fields: [categoria_id], references: [id])
+  Loja             Loja               @relation(fields: [loja_id], references: [id])
+}
+
+model Usuario {
+  id                  Int                   @id @default(autoincrement())
+  username            String
+  email               String                @unique
+  senha_hash          String
+  createdAt           DateTime              @default(now())
+  AvaliacaoLoja       AvaliacaoLoja[]
+  AvaliacaoProduto    AvaliacaoProduto[]
+  ComentarioAvaliacao ComentarioAvaliacao[]
+  Loja                Loja[]
+}
+
+enum MovimentacaoTipo {
+  entrada
+  saida
 }
