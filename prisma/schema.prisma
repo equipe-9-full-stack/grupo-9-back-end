@@ -14,7 +14,7 @@ model AvaliacaoLoja {
   nota                Int
   comentario          String?
   createdAt           DateTime              @default(now())
-  updatedAt           DateTime
+  updatedAt           DateTime              @updatedAt
   Loja                Loja                  @relation(fields: [loja_id], references: [id])
   Usuario             Usuario               @relation(fields: [usuario_id], references: [id])
   ComentarioAvaliacao ComentarioAvaliacao[]
@@ -27,7 +27,7 @@ model AvaliacaoProduto {
   nota                Int
   comentario          String?
   createdAt           DateTime              @default(now())
-  updatedAt           DateTime
+  updatedAt           DateTime              @updatedAt
   Produto             Produto               @relation(fields: [produto_id], references: [id])
   Usuario             Usuario               @relation(fields: [usuario_id], references: [id])
   ComentarioAvaliacao ComentarioAvaliacao[]
@@ -38,9 +38,9 @@ model Categoria {
   nome             String
   categoria_pai_id Int?
   createdAt        DateTime    @default(now())
-  updatedAt        DateTime
-  Categoria        Categoria?  @relation("CategoriaToCategoria", fields: [categoria_pai_id], references: [id])
-  other_Categoria  Categoria[] @relation("CategoriaToCategoria")
+  updatedAt        DateTime    @updatedAt
+  CategoriaPai     Categoria?  @relation("CategoriaToCategoria", fields: [categoria_pai_id], references: [id])
+  SubCategorias    Categoria[] @relation("CategoriaToCategoria")
   Produto          Produto[]
 }
 
@@ -51,7 +51,7 @@ model ComentarioAvaliacao {
   avaliacao_produto_id Int?
   conteudo             String
   createdAt            DateTime          @default(now())
-  updatedAt            DateTime
+  updatedAt            DateTime          @updatedAt
   AvaliacaoLoja        AvaliacaoLoja?    @relation(fields: [avaliacao_loja_id], references: [id])
   AvaliacaoProduto     AvaliacaoProduto? @relation(fields: [avaliacao_produto_id], references: [id])
   Usuario              Usuario           @relation(fields: [usuario_id], references: [id])
@@ -70,15 +70,16 @@ model Loja {
   id            Int             @id @default(autoincrement())
   usuario_id    Int
   nome          String
+  endereco      String
   descricao     String?
   logo_url      String?
   banner_url    String?
   sticker_url   String?
   createdAt     DateTime        @default(now())
-  updatedAt     DateTime
-  AvaliacaoLoja AvaliacaoLoja[]
+  updatedAt     DateTime        @updatedAt
   Usuario       Usuario         @relation(fields: [usuario_id], references: [id])
   Produto       Produto[]
+  AvaliacaoLoja AvaliacaoLoja[]
 }
 
 model Movimentacao {
@@ -99,7 +100,7 @@ model Produto {
   preco            Decimal            @db.Decimal(10, 2)
   estoque          Int
   createdAt        DateTime           @default(now())
-  updatedAt        DateTime
+  updatedAt        DateTime           @updatedAt
   AvaliacaoProduto AvaliacaoProduto[]
   ImagemProduto    ImagemProduto[]
   Movimentacao     Movimentacao[]
@@ -113,6 +114,7 @@ model Usuario {
   email               String                @unique
   senha_hash          String
   createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
   AvaliacaoLoja       AvaliacaoLoja[]
   AvaliacaoProduto    AvaliacaoProduto[]
   ComentarioAvaliacao ComentarioAvaliacao[]
