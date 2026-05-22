@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "types": ["node"],
     "module": "commonjs",
     "removeComments": true,
     "emitDecoratorMetadata": true,
