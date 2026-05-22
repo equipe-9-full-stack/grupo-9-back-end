@@ -26,6 +26,7 @@ model Loja {
   usuario_id       Int
   nome             String
   descricao        String?
+  endereco         String
   logo_url         String?
   banner_url       String?
   sticker_url      String?

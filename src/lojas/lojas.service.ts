@@ -15,7 +15,7 @@ export class LojasService {
         logo_url: data.logo_url,
         banner_url: data.banner_url,
         sticker_url: data.sticker_url,
-        Usuario: {connect: { id: data.usuario_id }
+        usuario: {connect: { id: data.usuario_id }
         },
       },
     });
@@ -23,14 +23,14 @@ export class LojasService {
 
   async findAll() {
     return await this.prisma.loja.findMany({
-      include: { Usuario: true }
+      include: { usuario: true }
     });
   }
 
   async getById(id: number) {
     const loja = await this.prisma.loja.findUnique({
       where: { id },
-      include: { Usuario: true }
+      include: { usuario: true }
     });
 
     if (!loja) {
