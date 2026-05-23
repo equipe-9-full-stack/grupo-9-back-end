@@ -25,6 +25,7 @@ model Loja {
   id               Int             @id @default(autoincrement())
   usuario_id       Int
   nome             String
+  endereco         String          // <-- Adicione esta linha!
   descricao        String?
   logo_url         String?
   banner_url       String?
