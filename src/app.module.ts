@@ -11,6 +11,9 @@ import { PrismaService } from './prisma/prisma.service';
 // Importações da branch dev
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { LojasModule } from './lojas/lojas.module';
+import { AuthService } from './auth/auth.service';
+import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,8 +22,9 @@ import { LojasModule } from './lojas/lojas.module';
     ComentariosAvaliacaoModule,
     UsuariosModule,
     LojasModule,
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, PrismaService],
+  controllers: [AppController, AuthController],
+  providers: [AppService, PrismaService, AuthService],
 })
 export class AppModule {}
