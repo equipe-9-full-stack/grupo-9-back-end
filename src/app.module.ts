@@ -2,12 +2,8 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-<<<<<<< HEAD
+import { AvaliacaoLojaModule } from './avaliacao-loja/avaliacao-loja.module';
 import { AvaliacaoProdutoModule } from './avaliacao-produto/avaliacao-produto.module';
-
-// Importações da sua branch
-=======
->>>>>>> origin/dev
 import { ProdutosModule } from './produtos/produtos.module';
 import { ImagensProdutoModule } from './imagens-produto/imagens-produto.module';
 import { ComentariosAvaliacaoModule } from './comentarios-avaliacao/comentarios-avaliacao.module';
@@ -19,15 +15,13 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
-<<<<<<< HEAD
+    AvaliacaoLojaModule,
     AvaliacaoProdutoModule,
-=======
-    PrismaModule, 
->>>>>>> origin/dev
+    PrismaModule,
     ProdutosModule,
     ImagensProdutoModule,
     ComentariosAvaliacaoModule,
-    UsuariosModule, 
+    UsuariosModule,
     LojasModule,
     AuthModule,
   ],
