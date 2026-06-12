@@ -15,3 +15,16 @@ export interface Loja {
     email: string;
   };
 }
+
+export interface AvaliacaoLoja {
+  id: number;
+  usuario_id: number;
+  loja_id: number;
+  nota: number;
+  comentario?: string;
+  usuario?: {
+    nome: string;
+    foto?: string;
+  };
+  loja?: Loja;
+}
