@@ -1,98 +1,142 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# STOCK.IO · Back-end
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST do **STOCK.IO**, plataforma do Grupo 9 onde usuários cadastram **lojas** e **produtos** e publicam **avaliações** e **comentários** sobre eles. Feita com NestJS, Prisma e PostgreSQL, com autenticação por JWT.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> O front-end desta aplicação está em [grupo-9-front-end](https://github.com/equipe-9-full-stack/grupo-9-front-end).
 
-## Description
+## Tecnologias
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+![NestJS](https://img.shields.io/badge/NestJS_11-E0234E?style=flat-square&logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma_6-2D3748?style=flat-square&logo=prisma&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=flat-square&logo=jest&logoColor=white)
 
-## Project setup
+- **Autenticação:** Passport (estratégias `local` e `jwt`), `@nestjs/jwt` e `bcrypt` para o hash das senhas
+- **Validação:** `class-validator` e `class-transformer` (`ValidationPipe` global)
+- **Banco de dados:** PostgreSQL acessado com Prisma ORM, com migrations versionadas
 
-```bash
-$ npm install
+## Funcionalidades
+
+- Cadastro de usuários e login com token JWT
+- CRUD de lojas (nome, descrição, endereço, logo, banner e sticker)
+- CRUD de produtos, com preço, estoque, categoria e galeria de imagens
+- Avaliações (nota e comentário) de lojas e de produtos
+- Comentários nas avaliações
+- Todas as rotas exigem token, exceto `POST /auth/login` e `POST /usuarios`
+
+## Modelo de dados
+
+```
+Usuario ─┬─< Loja ──< Produto >── Categoria (com subcategorias)
+         │              │
+         │              ├──< ImagemProduto
+         │              ├──< Movimentacao (entrada / saida)
+         │              └──< AvaliacaoProduto ─┐
+         ├──< AvaliacaoLoja ───────────────────┼──< ComentarioAvaliacao
+         └──< ComentarioAvaliacao <────────────┘
 ```
 
-## Compile and run the project
+O schema completo está em [`prisma/schema.prisma`](prisma/schema.prisma).
+
+## Endpoints
+
+| Recurso | Rotas |
+| --- | --- |
+| Autenticação | `POST /auth/login` (pública) |
+| Usuários | `POST /usuarios` (pública), `GET /usuarios`, `GET /usuarios/:id`, `PUT /usuarios/:id`, `DELETE /usuarios/:id` |
+| Lojas | `POST /lojas`, `GET /lojas`, `GET /lojas/:id`, `PUT /lojas/:id`, `DELETE /lojas/:id` |
+| Produtos | `POST /produtos`, `GET /produtos`, `GET /produtos/:id`, `PATCH /produtos/:id`, `DELETE /produtos/:id` |
+| Imagens de produto | `POST /imagens-produto`, `GET /imagens-produto`, `GET /imagens-produto/:id`, `PATCH /imagens-produto/:id`, `DELETE /imagens-produto/:id` |
+| Avaliações de loja | `POST /avaliacao-loja`, `GET /avaliacao-loja`, `GET /avaliacao-loja/:id`, `PATCH /avaliacao-loja/:id`, `DELETE /avaliacao-loja/:id` |
+| Avaliações de produto | `POST /avaliacao-produto`, `GET /avaliacao-produto`, `GET /avaliacao-produto/:id`, `PATCH /avaliacao-produto/:id`, `DELETE /avaliacao-produto/:id` |
+| Comentários | `POST /comentarios-avaliacao`, `GET /comentarios-avaliacao`, `GET /comentarios-avaliacao/:id`, `PATCH /comentarios-avaliacao/:id`, `DELETE /comentarios-avaliacao/:id` |
+
+As rotas protegidas esperam o cabeçalho `Authorization: Bearer <token>`, com o token retornado por `POST /auth/login`.
+
+## Como executar
+
+### Pré-requisitos
+
+- Node.js 20 ou superior
+- Uma instância de PostgreSQL (local ou na nuvem)
+
+### Passo a passo
 
 ```bash
-# development
-$ npm run start
+# 1. Clone o repositório e entre na branch de desenvolvimento
+git clone https://github.com/equipe-9-full-stack/grupo-9-back-end.git
+cd grupo-9-back-end
+git checkout dev
 
-# watch mode
-$ npm run start:dev
+# 2. Instale as dependências
+npm install
 
-# production mode
-$ npm run start:prod
+# 3. Configure as variáveis de ambiente
+cp .env.example .env
+# edite o .env com os dados do seu banco
+
+# 4. Aplique as migrations e gere o Prisma Client
+npx prisma migrate deploy
+npx prisma generate
+
+# 5. Inicie a API em modo de desenvolvimento
+npm run start:dev
 ```
 
-## Run tests
+A API sobe em **http://localhost:3001**.
 
-```bash
-# unit tests
-$ npm run test
+### Variáveis de ambiente
 
-# e2e tests
-$ npm run test:e2e
+| Variável | Descrição |
+| --- | --- |
+| `DATABASE_URL` | String de conexão do PostgreSQL, por exemplo `postgresql://usuario:senha@host/banco?sslmode=require` |
+| `JWT_SECRET` | Chave usada para assinar os tokens JWT. Defina uma chave própria e nunca a versione. |
 
-# test coverage
-$ npm run test:cov
+## Scripts
+
+| Comando | O que faz |
+| --- | --- |
+| `npm run start:dev` | Inicia a API com recarregamento automático |
+| `npm run build` | Compila o projeto para `dist/` |
+| `npm run start:prod` | Executa a versão compilada |
+| `npm run lint` | Roda o ESLint |
+| `npm run format` | Formata o código com o Prettier |
+| `npm test` | Roda os testes unitários |
+| `npm run test:e2e` | Roda os testes end-to-end |
+
+## Estrutura
+
+```
+src/
+├── auth/                  # login, guards e estratégias JWT/local
+├── usuarios/
+├── lojas/
+├── produtos/
+├── imagens-produto/
+├── avaliacao-loja/
+├── avaliacao-produto/
+├── comentarios-avaliacao/
+├── prisma/                # PrismaModule e PrismaService
+└── main.ts                # bootstrap (CORS, ValidationPipe, porta 3001)
+prisma/
+├── schema.prisma
+└── migrations/
+postman/                   # coleção para testar a API
 ```
 
-## Deployment
+## Fluxo de trabalho
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+1. Crie uma branch a partir da `dev` (`feat/nome-da-feature`).
+2. Abra um Pull Request para a `dev`.
+3. Depois da revisão, a `dev` é integrada à `main`.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Equipe
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Projeto desenvolvido pelo **Grupo 9** (organização [equipe-9-full-stack](https://github.com/equipe-9-full-stack)):
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- [@lianeiv](https://github.com/lianeiv)
+- [@Lulu-souza](https://github.com/Lulu-souza)
+- [@mahluoliveira](https://github.com/mahluoliveira)
+- [@LeticiaSantosss](https://github.com/LeticiaSantosss)
